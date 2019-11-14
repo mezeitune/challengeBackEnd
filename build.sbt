@@ -10,6 +10,8 @@ lazy val versions = new {
 }
 
 libraryDependencies ++= Seq(
+  "com.softwaremill.sttp.client" %% "core" % "2.0.0-RC1",
+  "com.typesafe.scala-logging" %% "scala-logging" % "3.9.2",
   "com.typesafe.slick" %% "slick" % "3.2.1",
   "org.slf4j" % "slf4j-nop" % "1.6.4",
   "com.typesafe.slick" %% "slick-hikaricp" % "3.2.1",
