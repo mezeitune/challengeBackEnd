@@ -2,8 +2,10 @@ package clients
 
 import com.typesafe.scalalogging.StrictLogging
 import config.RestConfig
+import exceptions.RestCountryClientException
 import sttp.client._
 import javax.inject.Singleton
+
 import scala.util.Try
 
 /** Created by Matias Zeitune nov. 2019 **/
@@ -17,7 +19,14 @@ class RestCountryClient extends StrictLogging{
     val request = basicRequest.get(uri"${restConfig.url}/rest/v2/alpha/$countryCode")
     val response = request.send()
 
-    response.body.right.get
+    if(response.code.isSuccess){
+      logger.info("Country information was successfully obtained")
+      response.body.right.get
+    }else{
+      logger.error("There was a problem retrieving country information")
+      throw RestCountryClientException("There was a problem retrieving country information")
+    }
+
   }
 
 }

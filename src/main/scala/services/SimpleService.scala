@@ -1,6 +1,7 @@
 package services
 
 import clients.{FixerClient, Ip2CountryClient, RestCountryClient}
+import com.typesafe.scalalogging.StrictLogging
 import javax.inject.{Inject, Singleton}
 
 /** Created by Matias Zeitune nov. 2019 **/
@@ -8,7 +9,7 @@ import javax.inject.{Inject, Singleton}
 @Singleton
 class SimpleService @Inject()(ip2CountryClient: Ip2CountryClient,
                               restCountryClient: RestCountryClient,
-                              fixerClient: FixerClient) {
+                              fixerClient: FixerClient) extends StrictLogging{
 
   def ipInfo(ip: String): String = {
     ip2CountryClient.getCountryInfo(ip)

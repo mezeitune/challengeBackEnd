@@ -2,8 +2,8 @@ package clients
 
 import com.typesafe.scalalogging.StrictLogging
 import config.RestConfig
+import dtos.Ip2CountryResponse
 import javax.inject.Singleton
-import model.Ip2CountryResponse
 import sttp.client._
 import utils.ObjectMapper
 
