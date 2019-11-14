@@ -10,8 +10,10 @@ class SimpleService @Inject()(ip2CountryClient: Ip2CountryClient,
                               restCountryClient: RestCountryClient,
                               fixerClient: FixerClient) {
 
-  def ipInfo(ip: Int): String = {
-    restCountryClient.getCountryInfo("col").get
+  def ipInfo(ip: String): String = {
+    ip2CountryClient.getCountryInfo(ip)
+      .map(ip2CountryResponse => restCountryClient.getCountryInfo(ip2CountryResponse.countryCode3).get)
+      .get
   }
 
 }

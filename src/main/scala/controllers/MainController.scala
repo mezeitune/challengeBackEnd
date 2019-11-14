@@ -30,6 +30,6 @@ class MainController @Inject()(serv: SimpleService) extends Controller {
   Información sobre monedas: http://fixer.io/
    */
   get("/:ip") { request: Request =>
-    response.ok.json(serv.ipInfo(request.getIntParam("ip")))
+    response.ok.json(serv.ipInfo(request.getParam("ip")))
   }
 }
