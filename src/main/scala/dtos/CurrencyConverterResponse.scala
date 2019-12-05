@@ -1,4 +1,4 @@
 package dtos
 
 /** Created by Matias Zeitune nov. 2019 **/
-case class FixerResponse()
+case class CurrencyConverterValue(currency: Double)

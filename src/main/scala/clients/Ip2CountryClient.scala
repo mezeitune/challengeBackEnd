@@ -20,7 +20,13 @@ class Ip2CountryClient extends StrictLogging{
     val request = basicRequest.get(uri"${restConfig.url}/ip?$ip")
     val response = request.send()
 
-    objectMapper.readValue(response.body.right.get, classOf[Ip2CountryResponse])
+    if(response.code.isSuccess){
+      logger.info("Ip2Country information was successfully obtained")
+      objectMapper.readValue(response.body.right.get, classOf[Ip2CountryResponse])
+    }else{
+      logger.error("There was a problem retrieving Ip2Country information")
+      throw new RuntimeException("There was a problem retrieving Ip2Country information")
+    }
   }
 
 }

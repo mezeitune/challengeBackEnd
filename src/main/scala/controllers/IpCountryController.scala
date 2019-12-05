@@ -2,12 +2,14 @@ package controllers
 
 import com.twitter.finagle.http.Request
 import com.twitter.finatra.http.Controller
-import services.SimpleService
+import services.IpCountryService
 import javax.inject.{Inject, Singleton}
+
+import scala.util.{Failure, Success}
 
 /** Created by Matias Zeitune nov. 2019 **/
 @Singleton
-class MainController @Inject()(serv: SimpleService) extends Controller {
+class IpCountryController @Inject()(serv: IpCountryService) extends Controller {
 
   /*
   Dada una IP obtenga info asociada a:
@@ -29,7 +31,12 @@ class MainController @Inject()(serv: SimpleService) extends Controller {
   Información de paises: http://restcountries.eu/
   Información sobre monedas: http://fixer.io/
    */
-  get("/:ip") { request: Request =>
-    response.ok.json(serv.ipInfo(request.getParam("ip")))
+  get("/:ip") { request: Request => {
+      val ip = request.getParam("ip")
+      serv.ipInfo(ip) match {
+        case Success(ipInformationResponse) => response.ok.json(ipInformationResponse)
+        case Failure(_) => response.internalServerError()
+      }
+    }
   }
 }
