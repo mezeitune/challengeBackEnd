@@ -12,8 +12,8 @@ import scala.util.Try
 class FixerFacade @Inject()(currencyConverterClient: FixerClient) extends StrictLogging {
 
   def getCurrency(fromCurrency: String, toCurrency: String): Try[Double] = {
-    val currencyConverterResponse: Try[FixerResponse] = currencyConverterClient.getCurrency(fromCurrency, toCurrency)
-    currencyConverterResponse.map {
+    val fixerResponse: Try[FixerResponse] = currencyConverterClient.getCurrency(fromCurrency, toCurrency)
+    fixerResponse.map {
       case quoteInfo: FixerResponse =>
         quoteInfo
           .rates

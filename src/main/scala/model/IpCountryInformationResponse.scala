@@ -7,7 +7,7 @@ case class IpCountryInformationResponse(countryName: String,
                                         isoCountryCode: String,
                                         officialLanguages: Seq[String],
                                         currentHours: Seq[DateTime],
-                                        estimatedDistance: String,
+                                        estimatedDistance: Double,
                                         currencies: Seq[CountryCurrency]) //Countries like Cuba can have more than one currency
 
 case class CountryCurrency(localCurrency: String,

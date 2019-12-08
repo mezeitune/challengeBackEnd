@@ -7,6 +7,7 @@ case class RestCountryResponse(name: String,
                                capital: String,
                                languages: Seq[Language],
                                currencies: Seq[Currencie],
+                               latlng: Seq[Double],
                                timezones: Seq[TimeZone])
 
 case class Language(name: String)

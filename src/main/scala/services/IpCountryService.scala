@@ -6,6 +6,7 @@ import facades.FixerFacade
 import javax.inject.{Inject, Singleton}
 import model.{CountryCurrency, IpCountryInformationResponse}
 import org.joda.time.{DateTime, DateTimeZone}
+import utils.GeoDistanceUtil
 
 import scala.util.Try
 
@@ -36,11 +37,17 @@ class IpCountryService @Inject()(ip2CountryClient: Ip2CountryClient,
         isoCountryCode = ipCountry.countryCode3,
         officialLanguages = countryInformation.languages.map(_.name),
         currentHours = countryInformation.timezones.map(timeZone => DateTime.now(DateTimeZone.forTimeZone(timeZone))),
-        estimatedDistance = "s",
+        estimatedDistance = estimatedDistanceBetweenBsAsAnd(countryInformation.latlng.head, countryInformation.latlng(1)),
         currencies = quoteInformation
       )
     }
 
+  }
+
+  def estimatedDistanceBetweenBsAsAnd(latCountry: Double, longCountry: Double) = {
+    val bsAsLat = -34.603722
+    val bsAsLong = -58.381592
+    GeoDistanceUtil.distance(bsAsLat, latCountry, bsAsLong, longCountry)
   }
 
 }
