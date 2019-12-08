@@ -2,7 +2,7 @@ package clients
 
 import com.typesafe.scalalogging.StrictLogging
 import config.RestConfig
-import dtos.CurrencyConverterValue
+import dtos.FixerResponse
 import javax.inject.Singleton
 import sttp.client._
 import utils.ObjectMapper
@@ -11,25 +11,22 @@ import scala.util.Try
 
 /** Created by Matias Zeitune nov. 2019 **/
 @Singleton
-class CurrencyConverterClient extends StrictLogging {
+class FixerClient extends StrictLogging {
 
   implicit val backend = HttpURLConnectionBackend()
-  val restConfig = RestConfig("currencyConverter")
+  val restConfig = RestConfig("fixer")
   val objectMapper = ObjectMapper.standardMapper
 
-  def getCurrency(fromCurrency: String, toCurrency: String): Try[Map[String, CurrencyConverterValue]] = Try{
-    val request = basicRequest.get(uri"${restConfig.url}/api/v5/convert?q=${fromCurrency}_${toCurrency}&compact=y&apiKey=642916bdd9898bbfe8af")
+  def getCurrency(fromCurrency: String, toCurrency: String): Try[FixerResponse] = Try{
+    val request = basicRequest.get(uri"${restConfig.url}/api/latest?access_key=147e1fc48f807d984f56409f29583d68")
     val response = request.send()
 
     if(response.code.isSuccess){
       logger.info("Quotes information was successfully obtained")
-      val jsonResponse = response.body.right.get.replace("val", "currency")
-      objectMapper.readValue(jsonResponse, classOf[Map[String, CurrencyConverterValue]])
+      objectMapper.readValue(response.body.right.get, classOf[FixerResponse])
     }else{
       logger.error("There was a problem retrieving quotes information")
       throw new RuntimeException("There was a problem retrieving quotes information")
     }
-
   }
-
 }

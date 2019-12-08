@@ -2,7 +2,7 @@ package services
 
 import clients.{Ip2CountryClient, RestCountryClient}
 import com.typesafe.scalalogging.StrictLogging
-import facades.CurrencyConverterFacade
+import facades.FixerFacade
 import javax.inject.{Inject, Singleton}
 import model.{CountryCurrency, IpCountryInformationResponse}
 import org.joda.time.{DateTime, DateTimeZone}
@@ -14,7 +14,7 @@ import scala.util.Try
 @Singleton
 class IpCountryService @Inject()(ip2CountryClient: Ip2CountryClient,
                                  restCountryClient: RestCountryClient,
-                                 currencyConverterFacade: CurrencyConverterFacade) extends StrictLogging {
+                                 fixerFacade: FixerFacade) extends StrictLogging {
   /*
     Dada una IP obtenga info asociada a:
       ip-> encuentre pais al que pertenece ->
@@ -29,7 +29,7 @@ class IpCountryService @Inject()(ip2CountryClient: Ip2CountryClient,
     for {
       ipCountry <- ip2CountryClient.getCountryInfo(ip)
       countryInformation <- restCountryClient.getCountryInfo(ipCountry.countryCode3)
-      quoteInformation <- Try(countryInformation.currencies.map(c => CountryCurrency(c.name,currencyConverterFacade.getCurrency("USD",c.code).get.currency)))
+      quoteInformation <- Try(countryInformation.currencies.map(c => CountryCurrency(c.name,fixerFacade.getCurrency("USD",c.code).get)))
     } yield {
       IpCountryInformationResponse(
         countryName = countryInformation.name,
