@@ -11,4 +11,4 @@ case class IpCountryInformationResponse(countryName: String,
                                         currencies: Seq[CountryCurrency]) //Countries like Cuba can have more than one currency
 
 case class CountryCurrency(localCurrency: String,
-                           dolarQuote: Double)
+                           euroQuote: Double)

@@ -16,17 +16,8 @@ import scala.util.Try
 class IpCountryService @Inject()(ip2CountryClient: Ip2CountryClient,
                                  restCountryClient: RestCountryClient,
                                  fixerFacade: FixerFacade) extends StrictLogging {
-  /*
-    Dada una IP obtenga info asociada a:
-      ip-> encuentre pais al que pertenece ->
-       +Nombre y codigo ISO del pais
-       +Idiomas oficiales del pais
-       +Horas actueles en el pais
-       +Distancia estimanda entre Bs AS y el pais (km)
-       +Moneda local , y su cotizacion actual en dolares (Optional)
-   */
-  def ipInfo(ip: String): Try[IpCountryInformationResponse] = {
 
+  def ipInfo(ip: String): Try[IpCountryInformationResponse] = {
     for {
       ipCountry <- ip2CountryClient.getCountryInfo(ip)
       countryInformation <- restCountryClient.getCountryInfo(ipCountry.countryCode3)
@@ -41,7 +32,6 @@ class IpCountryService @Inject()(ip2CountryClient: Ip2CountryClient,
         currencies = quoteInformation
       )
     }
-
   }
 
   def estimatedDistanceBetweenBsAsAnd(latCountry: Double, longCountry: Double) = {

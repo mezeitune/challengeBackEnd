@@ -18,8 +18,8 @@ object GeoDistanceUtil {
     val c: Double = 2 * Math.asin(Math.sqrt(a))
 
     // Radius of earth in kilometers. Use 3956
-    // for miles
-    val r: Double = 6371
+    // for miles 6371
+    val r: Double = 3956
 
     // calculate the result
     c * r
