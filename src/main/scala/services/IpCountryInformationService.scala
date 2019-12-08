@@ -13,28 +13,35 @@ import scala.util.Try
 /** Created by Matias Zeitune nov. 2019 **/
 
 @Singleton
-class IpCountryService @Inject()(ip2CountryClient: Ip2CountryClient,
-                                 restCountryClient: RestCountryClient,
-                                 fixerFacade: FixerFacade) extends StrictLogging {
+class IpCountryInformationService @Inject()(ip2CountryClient: Ip2CountryClient,
+                                            restCountryClient: RestCountryClient,
+                                            fixerFacade: FixerFacade) extends StrictLogging {
 
-  def ipInfo(ip: String): Try[IpCountryInformationResponse] = {
+  def ipInformation(ip: String): Try[IpCountryInformationResponse] = {
     for {
       ipCountry <- ip2CountryClient.getCountryInfo(ip)
       countryInformation <- restCountryClient.getCountryInfo(ipCountry.countryCode3)
       quoteInformation <- Try(countryInformation.currencies.map(c => CountryCurrency(c.name,fixerFacade.getCurrency("USD",c.code).get)))
     } yield {
+      val estimatedDistanceToBsAs = estimatedDistanceBetweenBsAsAnd(countryInformation.latlng.head, countryInformation.latlng(1))
+      saveNewDistanceToBsAs(estimatedDistanceToBsAs, countryInformation.name)
       IpCountryInformationResponse(
         countryName = countryInformation.name,
         isoCountryCode = ipCountry.countryCode3,
         officialLanguages = countryInformation.languages.map(_.name),
         currentHours = countryInformation.timezones.map(timeZone => DateTime.now(DateTimeZone.forTimeZone(timeZone))),
-        estimatedDistance = estimatedDistanceBetweenBsAsAnd(countryInformation.latlng.head, countryInformation.latlng(1)),
+        estimatedDistance = estimatedDistanceToBsAs,
         currencies = quoteInformation
       )
     }
   }
 
-  def estimatedDistanceBetweenBsAsAnd(latCountry: Double, longCountry: Double) = {
+
+  def saveNewDistanceToBsAs(distance: Double, country: String): Unit = {
+
+  }
+
+  private def estimatedDistanceBetweenBsAsAnd(latCountry: Double, longCountry: Double): Double = {
     val bsAsLat = -34.603722
     val bsAsLong = -58.381592
     GeoDistanceUtil.distance(bsAsLat, latCountry, bsAsLong, longCountry)

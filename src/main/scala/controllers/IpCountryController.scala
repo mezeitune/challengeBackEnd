@@ -2,14 +2,17 @@ package controllers
 
 import com.twitter.finagle.http.Request
 import com.twitter.finatra.http.Controller
-import services.IpCountryService
+import services.{IpCountryInformationService, IpDistancesService}
 import javax.inject.{Inject, Singleton}
+import model.FailureResponse
 
 import scala.util.{Failure, Success}
 
 /** Created by Matias Zeitune nov. 2019 **/
 @Singleton
-class IpCountryController @Inject()(serv: IpCountryService) extends Controller {
+class IpCountryController @Inject()(ipCountryInformationService: IpCountryInformationService,
+                                    ipDistancesService: IpDistancesService)
+  extends Controller {
 
   /*
     Estadisticas respecto a la info anterior:
@@ -20,9 +23,17 @@ class IpCountryController @Inject()(serv: IpCountryService) extends Controller {
    */
   get("/ip/:ipNumber") { request: Request => {
       val ip = request.getParam("ipNumber")
-      serv.ipInfo(ip) match {
+      ipCountryInformationService.ipInformation(ip) match {
         case Success(ipInformationResponse) => response.ok.json(ipInformationResponse)
-        case Failure(_) => response.internalServerError()
+        case Failure(exception) => response.internalServerError(FailureResponse(500, exception.getMessage))
+      }
+    }
+  }
+
+  get("/distances") { _: Request => {
+      ipDistancesService.distancesInformation match {
+        case Success(ipInformationResponse) => response.ok.json(ipInformationResponse)
+        case Failure(exception) => response.internalServerError(FailureResponse(500, exception.getMessage))
       }
     }
   }
