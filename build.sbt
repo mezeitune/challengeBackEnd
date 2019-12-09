@@ -36,3 +36,5 @@ libraryDependencies ++= Seq(
   "com.twitter"                  %% "inject-app"                      % versions.finatra % "test" classifier "tests",
   "com.twitter"                  %% "inject-core"                     % versions.finatra % "test" classifier "tests",
   "com.twitter"                  %% "inject-modules"                  % versions.finatra % "test" classifier "tests")
+
+resolvers += Resolver.url("bintray-sbt-plugins", url("https://dl.bintray.com/eed3si9n/sbt-plugins/"))(Resolver.ivyStylePatterns)

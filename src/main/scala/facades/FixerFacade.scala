@@ -18,12 +18,10 @@ class FixerFacade @Inject()(fixerClient: FixerClient) extends StrictLogging {
     fixerResponse.map {
       case quoteInfo: FixerResponse =>
         quoteInfo
-          .rates
-          .get(toCurrency)
-          .getOrElse{
-            logger.error(s"There was a problem retrieving quotes information of $toCurrency")
-            throw FixerClientException(s"There was a problem retrieving quotes information of $toCurrency")
-          }
+          .rates.getOrElse(toCurrency, {
+          logger.error(s"There was a problem retrieving quotes information of $toCurrency")
+          throw FixerClientException(s"There was a problem retrieving quotes information of $toCurrency")
+        })
     }
   }
 
