@@ -14,12 +14,16 @@ class FixerFacade @Inject()(currencyConverterClient: FixerClient) extends Strict
 
   def getCurrency(fromCurrency: String, toCurrency: String): Try[Double] = {
     val fixerResponse: Try[FixerResponse] = currencyConverterClient.getCurrency(fromCurrency, toCurrency)
+    logger.info(s"Obtaining quote information of $toCurrency")
     fixerResponse.map {
       case quoteInfo: FixerResponse =>
         quoteInfo
           .rates
           .get(toCurrency)
-          .getOrElse(throw FixerClientException("There was a problem retrieving quotes information"))
+          .getOrElse{
+            logger.error(s"There was a problem retrieving quotes information of $toCurrency")
+            throw FixerClientException(s"There was a problem retrieving quotes information of $toCurrency")
+          }
     }
   }
 

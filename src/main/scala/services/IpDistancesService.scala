@@ -1,5 +1,6 @@
 package services
 
+import com.typesafe.scalalogging.StrictLogging
 import exceptions.DistancesException
 import javax.inject.{Inject, Singleton}
 import repository.{DistanceInvocation, DistancesRepository}
@@ -8,12 +9,16 @@ import scala.util.{Failure, Try}
 
 /** Created by Matias Zeitune dic. 2019 **/
 @Singleton
-class IpDistancesService @Inject() (){
+class IpDistancesService @Inject() () extends StrictLogging {
 
   def distancesInformation: Try[DistanceInvocation] = {
+    logger.info("Obtaining distance information")
     DistancesRepository.getDistances match{
       case Some(distances) => Try(distances)
-      case None => Failure(DistancesException("there are no charged distances"))
+      case None => {
+        logger.error("there are no charged distances")
+        Failure(DistancesException("there are no charged distances"))
+      }
     }
   }
 

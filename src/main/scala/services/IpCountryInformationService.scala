@@ -19,12 +19,15 @@ class IpCountryInformationService @Inject()(ip2CountryClient: Ip2CountryClient,
                                             fixerFacade: FixerFacade) extends StrictLogging {
 
   def ipInformation(ip: String): Try[IpCountryInformationResponse] = {
+    logger.info(s"Obtaining information of $ip")
     for {
       ipCountry <- ip2CountryClient.getCountryInfo(ip)
       countryInformation <- restCountryClient.getCountryInfo(ipCountry.countryCode3)
       quoteInformation <- Try(countryInformation.currencies.map(c => CountryCurrency(c.name,fixerFacade.getCurrency("USD",c.code).get)))
     } yield {
+      logger.info(s"Calculating Distance between BsAs and ${countryInformation.name}")
       val estimatedDistanceToBsAs = estimatedDistanceBetweenBsAsAnd(countryInformation.latlng.head, countryInformation.latlng(1))
+      logger.info(s"Saving distance between BsAs and ${countryInformation.name}")
       DistancesRepository.saveNewDistance(estimatedDistanceToBsAs, countryInformation.name)
       IpCountryInformationResponse(
         countryName = countryInformation.name,

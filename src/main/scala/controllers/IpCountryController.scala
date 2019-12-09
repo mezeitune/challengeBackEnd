@@ -14,13 +14,6 @@ class IpCountryController @Inject()(ipCountryInformationService: IpCountryInform
                                     ipDistancesService: IpDistancesService)
   extends Controller {
 
-  /*
-    Estadisticas respecto a la info anterior:
-    +Distancia mas lejana a Bs as desde la cual se haya consultado el servicio
-    +Distancia mas cercana ...
-    +Distancia promedio de todas las ejecucione sque se hayan hecho del servicio.
-    -> Ver ejemplo en el enunciado
-   */
   get("/ip/:ipNumber") { request: Request => {
       val ip = request.getParam("ipNumber")
       ipCountryInformationService.ipInformation(ip) match {
