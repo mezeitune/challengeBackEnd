@@ -11,6 +11,8 @@ class IpDistancesService @Inject() (){
 
   def distancesInformation: Try[IpDistancesResponse] = Try {
 
+
+
     IpDistancesResponse (
       furthestDistanceFromBsAs = 3.4,
       averageDistanceFromBsAs = 4.5,

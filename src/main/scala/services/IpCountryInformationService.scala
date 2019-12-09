@@ -6,6 +6,7 @@ import facades.FixerFacade
 import javax.inject.{Inject, Singleton}
 import model.{CountryCurrency, IpCountryInformationResponse}
 import org.joda.time.{DateTime, DateTimeZone}
+import repository.DistancesRepository
 import utils.GeoDistanceUtil
 
 import scala.util.Try
@@ -24,7 +25,7 @@ class IpCountryInformationService @Inject()(ip2CountryClient: Ip2CountryClient,
       quoteInformation <- Try(countryInformation.currencies.map(c => CountryCurrency(c.name,fixerFacade.getCurrency("USD",c.code).get)))
     } yield {
       val estimatedDistanceToBsAs = estimatedDistanceBetweenBsAsAnd(countryInformation.latlng.head, countryInformation.latlng(1))
-      saveNewDistanceToBsAs(estimatedDistanceToBsAs, countryInformation.name)
+      DistancesRepository.saveNewDistance(estimatedDistanceToBsAs, countryInformation.name)
       IpCountryInformationResponse(
         countryName = countryInformation.name,
         isoCountryCode = ipCountry.countryCode3,
@@ -34,11 +35,6 @@ class IpCountryInformationService @Inject()(ip2CountryClient: Ip2CountryClient,
         currencies = quoteInformation
       )
     }
-  }
-
-
-  def saveNewDistanceToBsAs(distance: Double, country: String): Unit = {
-
   }
 
   private def estimatedDistanceBetweenBsAsAnd(latCountry: Double, longCountry: Double): Double = {
