@@ -10,10 +10,10 @@ import scala.util.Try
 
 /** Created by Matias Zeitune nov. 2019 **/
 @Singleton
-class FixerFacade @Inject()(currencyConverterClient: FixerClient) extends StrictLogging {
+class FixerFacade @Inject()(fixerClient: FixerClient) extends StrictLogging {
 
   def getCurrency(fromCurrency: String, toCurrency: String): Try[Double] = {
-    val fixerResponse: Try[FixerResponse] = currencyConverterClient.getCurrency(fromCurrency, toCurrency)
+    val fixerResponse: Try[FixerResponse] = fixerClient.getCurrency(fromCurrency, toCurrency)
     logger.info(s"Obtaining quote information of $toCurrency")
     fixerResponse.map {
       case quoteInfo: FixerResponse =>
