@@ -3,6 +3,7 @@ package facades
 import clients.FixerClient
 import com.typesafe.scalalogging.StrictLogging
 import dtos.FixerResponse
+import exceptions.FixerClientException
 import javax.inject.{Inject, Singleton}
 
 import scala.util.Try
@@ -18,7 +19,7 @@ class FixerFacade @Inject()(currencyConverterClient: FixerClient) extends Strict
         quoteInfo
           .rates
           .get(toCurrency)
-          .getOrElse(throw new RuntimeException("There was a problem retrieving quotes information"))
+          .getOrElse(throw FixerClientException("There was a problem retrieving quotes information"))
     }
   }
 

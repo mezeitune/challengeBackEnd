@@ -3,6 +3,7 @@ package clients
 import com.typesafe.scalalogging.StrictLogging
 import config.RestConfig
 import dtos.Ip2CountryResponse
+import exceptions.Ip2CountryClientException
 import javax.inject.Singleton
 import sttp.client._
 import utils.ObjectMapper
@@ -25,7 +26,7 @@ class Ip2CountryClient extends StrictLogging{
       objectMapper.readValue(response.body.right.get, classOf[Ip2CountryResponse])
     }else{
       logger.error("There was a problem retrieving Ip2Country information")
-      throw new RuntimeException("There was a problem retrieving Ip2Country information")
+      throw Ip2CountryClientException("There was a problem retrieving Ip2Country information")
     }
   }
 

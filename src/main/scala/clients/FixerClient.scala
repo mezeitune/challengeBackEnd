@@ -3,6 +3,7 @@ package clients
 import com.typesafe.scalalogging.StrictLogging
 import config.RestConfig
 import dtos.FixerResponse
+import exceptions.FixerClientException
 import javax.inject.Singleton
 import sttp.client._
 import utils.ObjectMapper
@@ -26,7 +27,7 @@ class FixerClient extends StrictLogging {
       objectMapper.readValue(response.body.right.get, classOf[FixerResponse])
     }else{
       logger.error("There was a problem retrieving quotes information")
-      throw new RuntimeException("There was a problem retrieving quotes information")
+      throw FixerClientException("There was a problem retrieving quotes information")
     }
   }
 }

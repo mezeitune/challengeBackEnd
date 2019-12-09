@@ -1,5 +1,4 @@
 package repository
-import java.util.concurrent.ConcurrentHashMap
 
 /** Created by Matias Zeitune dic. 2019 **/
 object DistancesRepository {
