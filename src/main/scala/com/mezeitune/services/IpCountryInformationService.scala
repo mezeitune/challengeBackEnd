@@ -36,7 +36,7 @@ class IpCountryInformationService @Inject()(ip2CountryClient: Ip2CountryClient,
       ipCountry <- ip2CountryClient.getCountryInfo(ip)
       countryInformation <- restCountryClient.getCountryInfo(ipCountry.countryCode)
       quoteInformation <- fixerClient.getCurrency("USD")
-      quoteInformationMapped <- Try(quoteCurrencies(countryInformation.currencies, quoteInformation.rates))
+      quotedCurrencies <- Try(quoteCurrencies(countryInformation.currencies, quoteInformation.rates))
     } yield {
       logger.info(s"Calculating Distance between BsAs and ${countryInformation.name}")
       val estimatedDistanceToBsAs = estimatedDistanceBetweenBsAsAnd(countryInformation.latlng.head, countryInformation.latlng(1))
@@ -48,7 +48,7 @@ class IpCountryInformationService @Inject()(ip2CountryClient: Ip2CountryClient,
         officialLanguages = countryInformation.languages.map(_.name),
         currentHours = countryInformation.timezones.map(timeZone => DateTime.now(DateTimeZone.forTimeZone(timeZone))),
         estimatedDistance = estimatedDistanceToBsAs,
-        currencies = quoteInformationMapped
+        currencies = quotedCurrencies
       )
     }
   }
