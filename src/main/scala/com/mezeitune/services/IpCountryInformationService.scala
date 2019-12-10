@@ -58,7 +58,7 @@ class IpCountryInformationService @Inject()(ip2CountryClient: Ip2CountryClient,
       .map(c =>
         CountryCurrency(
           localCurrency = c.name,
-          euroQuote = quoteInformation.getOrElse(c.code, throw FixerClientException(s"There was a problem retrieving quotes information of $c.code"))
+          euroQuote = quoteInformation.getOrElse(c.code, throw FixerClientException(s"There was a problem retrieving quotes information of ${c.code}"))
         )
       )
   }
