@@ -1,14 +1,14 @@
 package com.mezeitune.services
 
-import com.mezeitune.clients.{Ip2CountryClient, RestCountryClient}
-import com.mezeitune.exceptions.IpInvalidException
-import com.typesafe.scalalogging.StrictLogging
-import com.mezeitune.facades.FixerFacade
-import javax.inject.{Inject, Singleton}
+import com.mezeitune.clients.{FixerClient, Ip2CountryClient, RestCountryClient}
+import com.mezeitune.dtos.Currencie
+import com.mezeitune.exceptions.{FixerClientException, IpInvalidException}
 import com.mezeitune.model.{CountryCurrency, IpCountryInformationResponse}
-import org.joda.time.{DateTime, DateTimeZone}
 import com.mezeitune.repository.DistancesRepository
 import com.mezeitune.utils.GeoDistanceUtil
+import com.typesafe.scalalogging.StrictLogging
+import javax.inject.{Inject, Singleton}
+import org.joda.time.{DateTime, DateTimeZone}
 
 import scala.util.{Failure, Try}
 
@@ -17,7 +17,7 @@ import scala.util.{Failure, Try}
 @Singleton
 class IpCountryInformationService @Inject()(ip2CountryClient: Ip2CountryClient,
                                             restCountryClient: RestCountryClient,
-                                            fixerFacade: FixerFacade) extends StrictLogging {
+                                            fixerClient: FixerClient) extends StrictLogging {
 
   def apply(ip: String): Try[IpCountryInformationResponse] = {
     isIpValid(ip) match {
@@ -26,16 +26,17 @@ class IpCountryInformationService @Inject()(ip2CountryClient: Ip2CountryClient,
     }
   }
 
-  def isIpValid(ip: String): Boolean = {
+  private def isIpValid(ip: String): Boolean = {
     ip.matches("^(?=.*[^\\.]$)((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.?){4}$")
   }
 
-  def ipInformation(ip: String): Try[IpCountryInformationResponse] = {
+  private def ipInformation(ip: String): Try[IpCountryInformationResponse] = {
     logger.info(s"Obtaining information of $ip")
     for {
       ipCountry <- ip2CountryClient.getCountryInfo(ip)
       countryInformation <- restCountryClient.getCountryInfo(ipCountry.countryCode)
-      quoteInformation <- Try(countryInformation.currencies.map(c => CountryCurrency(c.name,fixerFacade.getCurrency("USD",c.code).get)))
+      quoteInformation <- fixerClient.getCurrency("USD")
+      quoteInformationMapped <- Try(quoteCurrencies(countryInformation.currencies, quoteInformation.rates))
     } yield {
       logger.info(s"Calculating Distance between BsAs and ${countryInformation.name}")
       val estimatedDistanceToBsAs = estimatedDistanceBetweenBsAsAnd(countryInformation.latlng.head, countryInformation.latlng(1))
@@ -47,9 +48,19 @@ class IpCountryInformationService @Inject()(ip2CountryClient: Ip2CountryClient,
         officialLanguages = countryInformation.languages.map(_.name),
         currentHours = countryInformation.timezones.map(timeZone => DateTime.now(DateTimeZone.forTimeZone(timeZone))),
         estimatedDistance = estimatedDistanceToBsAs,
-        currencies = quoteInformation
+        currencies = quoteInformationMapped
       )
     }
+  }
+
+  private def quoteCurrencies(currencies: Seq[Currencie], quoteInformation: Map[String, Double]): Seq[CountryCurrency] = {
+    currencies
+      .map(c =>
+        CountryCurrency(
+          localCurrency = c.name,
+          euroQuote = quoteInformation.getOrElse(c.code, throw FixerClientException(s"There was a problem retrieving quotes information of $c.code"))
+        )
+      )
   }
 
   private def estimatedDistanceBetweenBsAsAnd(latCountry: Double, longCountry: Double): Double = {

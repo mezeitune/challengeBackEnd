@@ -13,9 +13,9 @@ import scala.util.Try
 @Singleton
 class Ip2CountryClient extends StrictLogging{
 
-  implicit val backend = HttpURLConnectionBackend()
-  val restConfig = RestConfig("ip2country")
-  val objectMapper = ObjectMapper.standardMapper
+  private implicit val backend = HttpURLConnectionBackend()
+  private val restConfig = RestConfig("ip2country")
+  private val objectMapper = ObjectMapper.standardMapper
 
   def getCountryInfo(ip: String): Try[Ip2CountryResponse] = Try{
     val request = basicRequest.get(uri"${restConfig.url}/ip?$ip")

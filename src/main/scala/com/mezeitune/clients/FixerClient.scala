@@ -14,12 +14,12 @@ import scala.util.Try
 @Singleton
 class FixerClient extends StrictLogging {
 
-  implicit val backend = HttpURLConnectionBackend()
-  val restConfig = RestConfig("fixer")
-  val fixerKey = KeyConfig("fixerKey").key
-  val objectMapper = ObjectMapper.standardMapper
+  private implicit val backend = HttpURLConnectionBackend()
+  private val restConfig = RestConfig("fixer")
+  private val fixerKey = KeyConfig("fixerKey").key
+  private val objectMapper = ObjectMapper.standardMapper
 
-  def getCurrency(fromCurrency: String, toCurrency: String): Try[FixerResponse] = Try{
+  def getCurrency(fromCurrency: String): Try[FixerResponse] = Try{
     val request = basicRequest.get(uri"${restConfig.url}/api/latest?access_key=$fixerKey")
     val response = request.send()
 

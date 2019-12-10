@@ -1,8 +1,7 @@
 import java.util.TimeZone
 
-import com.mezeitune.clients.{Ip2CountryClient, RestCountryClient}
-import com.mezeitune.dtos.{Currencie, Ip2CountryResponse, Language, RestCountryResponse}
-import com.mezeitune.facades.FixerFacade
+import com.mezeitune.clients.{FixerClient, Ip2CountryClient, RestCountryClient}
+import com.mezeitune.dtos.{Currencie, FixerResponse, Ip2CountryResponse, Language, RestCountryResponse}
 import com.mezeitune.model.CountryCurrency
 import com.mezeitune.services.IpCountryInformationService
 import org.mockito.Mockito.when
@@ -20,7 +19,7 @@ class IpInformationTest
 
   val mockedIp2CountryClient = mock[Ip2CountryClient]
   val mockedRestCountryClient = mock[RestCountryClient]
-  val mockedFixerFacade = mock[FixerFacade]
+  val mockedFixerClient = mock[FixerClient]
 
   behavior of "ip country information"
 
@@ -37,14 +36,14 @@ class IpInformationTest
         )
       )
     )
-    when(mockedFixerFacade.getCurrency("USD","GBP")).thenReturn(Success(2.0))
+    when(mockedFixerClient.getCurrency("USD")).thenReturn(Success(FixerResponse(Map("GBP" -> 2.0))))
 
   }
 
-  val ipCountryInformationService: IpCountryInformationService = new IpCountryInformationService(mockedIp2CountryClient,mockedRestCountryClient,mockedFixerFacade)
+  val ipCountryInformationService: IpCountryInformationService = new IpCountryInformationService(mockedIp2CountryClient, mockedRestCountryClient, mockedFixerClient)
 
   it should "return information of england ip" in {
-    val ipInfoResponse = ipCountryInformationService.ipInformation("185.86.151.11").get
+    val ipInfoResponse = ipCountryInformationService("185.86.151.11").get
     ipInfoResponse.countryName shouldBe "United Kingdom of Great Britain and Northern Ireland"
     ipInfoResponse.isoCountryCode shouldBe "GBR"
     ipInfoResponse.officialLanguages shouldBe Seq("English")
