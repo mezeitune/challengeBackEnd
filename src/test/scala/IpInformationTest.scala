@@ -3,9 +3,8 @@ import java.util.TimeZone
 import com.mezeitune.clients.{Ip2CountryClient, RestCountryClient}
 import com.mezeitune.dtos.{Currencie, Ip2CountryResponse, Language, RestCountryResponse}
 import com.mezeitune.facades.FixerFacade
-import com.mezeitune.model.{CountryCurrency, IpCountryInformationResponse}
+import com.mezeitune.model.CountryCurrency
 import com.mezeitune.services.IpCountryInformationService
-import org.joda.time.{DateTime, DateTimeZone}
 import org.mockito.Mockito.when
 import org.scalatest.mockito.MockitoSugar
 import org.scalatest.{BeforeAndAfter, FlatSpec, Matchers}
