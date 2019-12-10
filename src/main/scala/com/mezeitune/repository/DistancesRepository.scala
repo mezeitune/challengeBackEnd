@@ -9,15 +9,15 @@ object DistancesRepository {
     this.synchronized {
       val newDistances = distances.map{
         case distanceInvocation: DistanceInvocation =>
-          val nearest = if(distanceInvocation.nearestDistanceFromBsAs.distance < distance) Invocation(distanceInvocation.nearestDistanceFromBsAs.distance, distanceInvocation.nearestDistanceFromBsAs.country) else Invocation(distance,country)
-          val furthest = if(distanceInvocation.furthestDistanceFromBsAs.distance > distance) Invocation(distanceInvocation.furthestDistanceFromBsAs.distance, distanceInvocation.furthestDistanceFromBsAs.country) else Invocation(distance,country)
-          val average = (distanceInvocation.averageDistanceFromBsAs + distance) / 2
-          DistanceInvocation(nearest,average,furthest)
+          val nearest = if(distanceInvocation.nearestDistanceFromBsAs.distance < distance) distanceInvocation.nearestDistanceFromBsAs else Distance(distance,country)
+          val furthest = if(distanceInvocation.furthestDistanceFromBsAs.distance > distance) distanceInvocation.furthestDistanceFromBsAs  else Distance(distance,country)
+          val distances = distanceInvocation.distances ++ Seq(distance)
+          DistanceInvocation(nearest, distances,furthest)
       }.orElse{
         Option(DistanceInvocation(
-          nearestDistanceFromBsAs = Invocation(distance, country),
-          averageDistanceFromBsAs = distance,
-          furthestDistanceFromBsAs = Invocation(distance, country)
+          nearestDistanceFromBsAs = Distance(distance, country),
+          distances = Seq(distance),
+          furthestDistanceFromBsAs = Distance(distance, country)
         ))
       }
       distances = newDistances
