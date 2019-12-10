@@ -11,7 +11,7 @@ object DistancesRepository {
         case distanceInvocation: DistanceInvocation =>
           val nearest = if(distanceInvocation.nearestDistanceFromBsAs.distance < distance) distanceInvocation.nearestDistanceFromBsAs else Distance(distance,country)
           val furthest = if(distanceInvocation.furthestDistanceFromBsAs.distance > distance) distanceInvocation.furthestDistanceFromBsAs  else Distance(distance,country)
-          val distances = distanceInvocation.distances ++ Seq(distance)
+          val distances = distanceInvocation.distances :+ distance
           DistanceInvocation(nearest, distances,furthest)
       }.orElse{
         Option(DistanceInvocation(
