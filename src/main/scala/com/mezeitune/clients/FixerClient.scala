@@ -1,12 +1,12 @@
 package com.mezeitune.clients
 
-import com.typesafe.scalalogging.StrictLogging
-import com.mezeitune.config.RestConfig
+import com.mezeitune.config.{KeyConfig, RestConfig}
 import com.mezeitune.dtos.FixerResponse
 import com.mezeitune.exceptions.FixerClientException
+import com.mezeitune.utils.ObjectMapper
+import com.typesafe.scalalogging.StrictLogging
 import javax.inject.Singleton
 import sttp.client._
-import com.mezeitune.utils.ObjectMapper
 
 import scala.util.Try
 
@@ -16,10 +16,11 @@ class FixerClient extends StrictLogging {
 
   implicit val backend = HttpURLConnectionBackend()
   val restConfig = RestConfig("fixer")
+  val fixerKey = KeyConfig("fixerKey").key
   val objectMapper = ObjectMapper.standardMapper
 
   def getCurrency(fromCurrency: String, toCurrency: String): Try[FixerResponse] = Try{
-    val request = basicRequest.get(uri"${restConfig.url}/api/latest?access_key=147e1fc48f807d984f56409f29583d68")
+    val request = basicRequest.get(uri"${restConfig.url}/api/latest?access_key=$fixerKey")
     val response = request.send()
 
     if(response.code.isSuccess){
