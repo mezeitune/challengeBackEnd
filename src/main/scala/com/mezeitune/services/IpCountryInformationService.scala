@@ -22,7 +22,7 @@ class IpCountryInformationService @Inject()(ip2CountryClient: Ip2CountryClient,
     logger.info(s"Obtaining information of $ip")
     for {
       ipCountry <- ip2CountryClient.getCountryInfo(ip)
-      countryInformation <- restCountryClient.getCountryInfo(ipCountry.countryCode3)
+      countryInformation <- restCountryClient.getCountryInfo(ipCountry.countryCode)
       quoteInformation <- Try(countryInformation.currencies.map(c => CountryCurrency(c.name,fixerFacade.getCurrency("USD",c.code).get)))
     } yield {
       logger.info(s"Calculating Distance between BsAs and ${countryInformation.name}")
@@ -31,7 +31,7 @@ class IpCountryInformationService @Inject()(ip2CountryClient: Ip2CountryClient,
       DistancesRepository.saveNewDistance(estimatedDistanceToBsAs, countryInformation.name)
       IpCountryInformationResponse(
         countryName = countryInformation.name,
-        isoCountryCode = ipCountry.countryCode3,
+        isoCountryCode = ipCountry.countryCode,
         officialLanguages = countryInformation.languages.map(_.name),
         currentHours = countryInformation.timezones.map(timeZone => DateTime.now(DateTimeZone.forTimeZone(timeZone))),
         estimatedDistance = estimatedDistanceToBsAs,
