@@ -1,6 +1,7 @@
 package com.mezeitune.services
 
 import com.mezeitune.clients.{Ip2CountryClient, RestCountryClient}
+import com.mezeitune.exceptions.IpInvalidException
 import com.typesafe.scalalogging.StrictLogging
 import com.mezeitune.facades.FixerFacade
 import javax.inject.{Inject, Singleton}
@@ -9,7 +10,7 @@ import org.joda.time.{DateTime, DateTimeZone}
 import com.mezeitune.repository.DistancesRepository
 import com.mezeitune.utils.GeoDistanceUtil
 
-import scala.util.Try
+import scala.util.{Failure, Try}
 
 /** Created by Matias Zeitune nov. 2019 **/
 
@@ -17,6 +18,17 @@ import scala.util.Try
 class IpCountryInformationService @Inject()(ip2CountryClient: Ip2CountryClient,
                                             restCountryClient: RestCountryClient,
                                             fixerFacade: FixerFacade) extends StrictLogging {
+
+  def apply(ip: String): Try[IpCountryInformationResponse] = {
+    isIpValid(ip) match {
+      case true => ipInformation(ip)
+      case false => Failure(IpInvalidException(s"$ip is invalid"))
+    }
+  }
+
+  def isIpValid(ip: String): Boolean = {
+    ip.matches("^(?=.*[^\\.]$)((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.?){4}$")
+  }
 
   def ipInformation(ip: String): Try[IpCountryInformationResponse] = {
     logger.info(s"Obtaining information of $ip")

@@ -1,6 +1,6 @@
 package com.mezeitune.controllers
 
-import com.mezeitune.exceptions.DistancesException
+import com.mezeitune.exceptions.{DistancesException, IpInvalidException}
 import com.twitter.finagle.http.Request
 import com.twitter.finatra.http.Controller
 import com.mezeitune.services.{IpCountryInformationService, IpDistancesService}
@@ -17,8 +17,9 @@ class IpCountryController @Inject()(ipCountryInformationService: IpCountryInform
 
   get("/ip/:ipNumber") { request: Request => {
       val ip = request.getParam("ipNumber")
-      ipCountryInformationService.ipInformation(ip) match {
+      ipCountryInformationService(ip) match {
         case Success(ipInformationResponse) => response.ok.json(ipInformationResponse)
+        case Failure(IpInvalidException(msg)) => response.badRequest(FailureResponse(400, msg))
         case Failure(exception) => response.internalServerError(FailureResponse(500, exception.getMessage))
       }
     }
