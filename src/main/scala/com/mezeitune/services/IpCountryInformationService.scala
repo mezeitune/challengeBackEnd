@@ -26,7 +26,7 @@ class IpCountryInformationService @Inject()(ip2CountryClient: Ip2CountryClient,
     }
   }
 
-  private def isIpValid(ip: String): Boolean = {
+  def isIpValid(ip: String): Boolean = {
     ip.matches("^(?=.*[^\\.]$)((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.?){4}$")
   }
 

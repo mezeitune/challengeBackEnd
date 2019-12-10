@@ -51,5 +51,12 @@ class IpInformationTest
     ipInfoResponse.currencies shouldBe Seq(CountryCurrency(localCurrency = "British pound", euroQuote = 2.0))
   }
 
+  it should "return invalid ip" in {
+    ipCountryInformationService.isIpValid("12") shouldBe false
+  }
+
+  it should "return valid ip" in {
+    ipCountryInformationService.isIpValid("185.86.151.11") shouldBe true
+  }
 
 }
